@@ -82,17 +82,20 @@ partial class InventoryManager
     {
         if (_inventory is not { } inventory) return;
 
-        inventory.AddOrUpdate(msg.Item, out bool added);
+        foreach (var item in msg.Items)
+        {
+            inventory.AddOrUpdate(item, out bool added);
 
-        if (added)
-        {
-            _logger.LogDebug("Added inventory item #{ItemId}.", msg.Item.ItemId);
-            ItemAdded?.Invoke(new InventoryItemEventArgs(msg.Item));
-        }
-        else
-        {
-            _logger.LogDebug("Updated inventory item #{ItemId}.", msg.Item.ItemId);
-            ItemUpdated?.Invoke(new InventoryItemEventArgs(msg.Item));
+            if (added)
+            {
+                _logger.LogDebug("Added inventory item #{ItemId}.", item.ItemId);
+                ItemAdded?.Invoke(new InventoryItemEventArgs(item));
+            }
+            else
+            {
+                _logger.LogDebug("Updated inventory item #{ItemId}.", item.ItemId);
+                ItemUpdated?.Invoke(new InventoryItemEventArgs(item));
+            }
         }
     }
 
